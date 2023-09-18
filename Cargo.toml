@@ -1,0 +1,12 @@
+[package]
+name = "cnctd_cli"
+version = "0.1.0"
+edition = "2021"
+authors = ["Connected Dot Inc.", "Kyle Ebner <kyle@cnctd.world>"]
+description = "CLI for scaffolding and managing projects"
+license = "MIT"
+repository = "https://github.com/Connected-Dot/cnctd_cli"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
