@@ -44,6 +44,7 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
                 }
                 None => {
                     let current_path = current_dir()?;
+                    println!("current path: {:?}", current_path);
                     let dir = current_path.as_os_str().to_str().unwrap();
                     print_project_versions(dir)?;
                 }
