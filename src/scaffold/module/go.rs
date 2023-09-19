@@ -1,0 +1,51 @@
+use std::fmt;
+
+use cnctd::cnctd_dialogue::Dialog;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default, PartialEq)]
+pub struct GoModule {
+    features: Vec<GoModFeature>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, EnumIter, PartialEq)]
+pub enum GoModFeature {
+    Async,
+    Tests,    
+}
+
+impl fmt::Display for GoModFeature {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let display_str = match self {
+            Self::Async => "Async",
+            Self::Tests => "Tests",
+        };
+        write!(f, "{}", display_str)
+    }
+}
+
+impl GoModule {
+    pub fn new() -> Self {
+        Self {
+            features: vec![]
+        }
+    }
+
+    fn select_features(&mut self) -> &mut Self {
+        let default_features = Some(vec![GoModFeature::Async, GoModFeature::Tests]);
+        let selected_features = Dialog::multi_select::<GoModFeature>("Pick your module options?", default_features, None, None);
+    
+        self.features = selected_features;
+        
+        self
+    }
+
+    pub fn choose_options() -> Self {
+        let mut rust_module = Self::new();
+        rust_module.select_features();
+        
+        rust_module
+    }
+
+    
+}
