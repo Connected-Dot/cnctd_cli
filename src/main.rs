@@ -13,6 +13,7 @@ use tokio;
 use dotenv::dotenv;
 use figlet_rs::FIGfont;
 
+pub mod project;
 pub mod routes;
 pub mod scaffold;
 pub mod config;

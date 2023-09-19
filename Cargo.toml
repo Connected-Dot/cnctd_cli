@@ -1,6 +1,6 @@
 [package]
 name = "cnctd_cli"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["Connected Dot Inc.", "Kyle Ebner <kyle@cnctd.world>"]
 description = "CLI for scaffolding and managing projects"
@@ -23,9 +23,11 @@ colored = "2.0.4"
 crossterm = "0.27.0"
 dotenv = "0.15.0"
 figlet-rs = "0.1.5"
+regex = "1.9.5"
 serde = { version = "1.0.188", features = ["derive"] }
 serde_json = "1.0.107"
 strum = "0.25.0"
 strum_macros = "0.25.2"
 tokio = { version = "1.32.0", features = ["full"] }
 toml = "0.8.0"
+walkdir = "2.4.0"

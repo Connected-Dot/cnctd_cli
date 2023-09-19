@@ -1,6 +1,6 @@
 use cnctd::cnctd_bump::bump_project;
 
-use crate::{Commands, scaffold::Scaffold, display_logo};
+use crate::{Commands, scaffold::Scaffold, display_logo, project::print_project_versions};
 
 use self::commands::config::{route_config_command, ConfigOptions};
 
@@ -23,7 +23,7 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
             Scaffold::run().await?;
         }
         Some(Commands::Update {  }) => {
-
+            print_project_versions("/Users/kyleebner/Development/ConnectedDot/cnctd")?;
         }
         Some(Commands::S1 {  }) => {}
         Some(Commands::S2 {  }) => {}
