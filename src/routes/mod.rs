@@ -1,3 +1,5 @@
+use std::env::current_dir;
+
 use cnctd::cnctd_bump::bump_project;
 
 use crate::{Commands, scaffold::Scaffold, display_logo, project::print_project_versions};
@@ -23,7 +25,7 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
             Scaffold::run().await?;
         }
         Some(Commands::Update {  }) => {
-            print_project_versions("/Users/kyleebner/Development/ConnectedDot/cnctd")?;
+            
         }
         Some(Commands::S1 {  }) => {}
         Some(Commands::S2 {  }) => {}
@@ -34,6 +36,18 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
                 None => bump_project("patch").await?,
             }
             
+        }
+        Some(Commands::Versions { d }) => {
+            match d {
+                Some(d) => {
+                    print_project_versions(&d)?;
+                }
+                None => {
+                    let current_path = current_dir()?;
+                    let dir = current_path.as_os_str().to_str().unwrap();
+                    print_project_versions(dir)?;
+                }
+            }
         }
         None => {
 

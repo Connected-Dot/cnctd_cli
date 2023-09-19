@@ -63,6 +63,13 @@ pub enum Commands {
 
     },
 
+    /// Get versions of all apps in current dir
+    Versions {
+        /// Optional directory
+        #[arg(short, long)]
+        d: Option<String>,
+    },
+
     #[command(about = get_shortcut_about(1))]
     S1 {
 
