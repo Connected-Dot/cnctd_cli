@@ -1,9 +1,36 @@
-use std::{path::Path, fs::File, io::Read, io::Write};
+use std::{path::Path, fs::File, io::Read, io::Write, fmt};
+use cnctd::cnctd_dialogue::Dialog;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use serde_json;
 
 use crate::get_exe_dir;
+
+#[derive(Debug, Deserialize, Serialize, Clone, EnumIter, Default, PartialEq)]
+enum MainOptions {
+    #[default]
+    UpdateGitToken,
+    UpdateIphoneId,
+    UpdateShortcut1,
+    UpdateShortcut2,
+    UpdateShortcut3,
+    Exit,
+}
+
+impl fmt::Display for MainOptions {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let display_str = match self {
+            Self::UpdateGitToken => "Update Git token",
+            Self::UpdateIphoneId => "Update iPhone ID",
+            Self::UpdateShortcut1 => "Update shortcut 1",
+            Self::UpdateShortcut2 => "Update shortcut 2",
+            Self::UpdateShortcut3 => "Update shortcut 3",
+            Self::Exit => "Exit",
+        };
+        write!(f, "{}", display_str)
+    }
+}
+
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
@@ -52,8 +79,17 @@ impl Config {
 
     pub fn write(self) {
         let config_string = serde_json::to_string(&self).unwrap();
-        let path = Self::get_file_path();
-        println!("path: {}", path.blue());
+        let path_str = Self::get_file_path();
+        let path = Path::new(&path_str);
+        
+        // Create the directory if it doesn't exist
+        if let Some(dir) = path.parent() {
+            if !dir.exists() {
+                std::fs::create_dir_all(dir).expect("Failed to create directory");
+            }
+        }
+    
+        println!("path: {}", path_str.blue());
         match File::create(&path) {
             Ok(mut file) => {
                 let buf = config_string.as_bytes();
@@ -77,6 +113,15 @@ impl Config {
                 config.git_token = Some(token.into());
                 Self::write(config)
             }
+        }
+    }
+
+    pub fn get_git_token() -> Option<String> {
+        match Self::get() {
+            Some(config) => {
+                config.git_token
+            }
+            None => None
         }
     }
 
@@ -148,4 +193,70 @@ impl Config {
             }
         }
     }
+
+    pub fn get_iphone_id() -> Option<String> {
+        match Self::get() {
+            Some(config) => {
+                match config.iphone {
+                    Some(iphone_id) => Some(iphone_id),
+                    None => None
+                }
+            }
+            None => None,
+        }
+    }
+
+    pub fn set_iphone_id(iphone_id: &str) {
+        match Self::get() {
+            Some(mut config) => {
+                config.iphone = Some(iphone_id.into());
+                Self::write(config);
+            }
+            None => {
+                let mut config = Self::new();
+                config.iphone = Some(iphone_id.into());
+                Self::write(config)
+            }
+        }
+    }
+
+    pub fn launch_config_setup() {
+        println!("{}", "Welcome to config setup".cyan().bold());
+        let prompt = "What would you like to do?";
+        let selected_option = Dialog::select::<MainOptions>(prompt, None, None, None);
+    
+        match selected_option {
+            MainOptions::UpdateGitToken => {
+                update_value(Config::get_git_token(), "Git token", Config::set_git_token);
+            },
+            MainOptions::UpdateIphoneId => {
+                update_value(Config::get_iphone_id(), "iPhone ID", Config::set_iphone_id);
+            },
+            MainOptions::UpdateShortcut1 => {
+                update_value(Config::get_shortcut(1), "Shortcut 1", |v| Config::set_shortcut(1, v));
+            },
+            MainOptions::UpdateShortcut2 => {
+                update_value(Config::get_shortcut(2), "Shortcut 2", |v| Config::set_shortcut(2, v));
+            },
+            MainOptions::UpdateShortcut3 => {
+                update_value(Config::get_shortcut(3), "Shortcut 3", |v| Config::set_shortcut(3, v));
+            },
+            MainOptions::Exit => {},
+        }
+    }
+}
+
+fn update_value<T: ToString>(current_value: Option<T>, prompt: &str, update_fn: impl Fn(&str)) {
+    let prompt = match &current_value {
+        Some(current) => {
+            println!("Current value is: {}", current.to_string().blue());
+            format!("Update {}", prompt)
+        }
+        None => {
+            println!("No current value");
+            format!("Add {}", prompt)
+        }
+    };
+    let new_value = Dialog::input::<String>(&prompt, None, None, None);
+    update_fn(&new_value);
 }

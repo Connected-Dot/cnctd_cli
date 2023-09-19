@@ -32,25 +32,7 @@ struct Cli {
 pub enum Commands {
     /// Configure Settings
     Config {
-        /// Set project directory. Use "." for current directory
-        #[arg(short, long)]
-        github_token: Option<String>,
-
-        /// Set the iPhone to be used for testing
-        #[arg(short, long)]
-        iphone: Option<String>,
-
-        /// Set a shell command for shortcut 1
-        #[arg(long)]
-        s1: Option<String>,
-
-        /// Set a shell command for shortcut 2
-        #[arg(long)]
-        s2: Option<String>,
-
-        /// Set a shell command for shortcut 3
-        #[arg(long)]
-        s3: Option<String>
+        
     },
     /// Start something new
     New {
