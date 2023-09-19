@@ -1,3 +1,5 @@
+use cnctd::cnctd_bump::bump_project;
+
 use crate::{Commands, scaffold::Scaffold, display_logo};
 
 use self::commands::config::{route_config_command, ConfigOptions};
@@ -26,6 +28,13 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
         Some(Commands::S1 {  }) => {}
         Some(Commands::S2 {  }) => {}
         Some(Commands::S3 {  }) => {}
+        Some(Commands::Bump { version_part }) => {
+            match version_part {
+                Some(version_part) => bump_project(&version_part).await?,
+                None => bump_project("patch").await?,
+            }
+            
+        }
         None => {
 
         }

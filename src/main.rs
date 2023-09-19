@@ -74,6 +74,12 @@ pub enum Commands {
     S3 {
 
     },
+
+    /// Bump Project
+    Bump {
+        #[command()]
+        version_part: Option<String>,
+    },
 }
 
 #[tokio::main]
