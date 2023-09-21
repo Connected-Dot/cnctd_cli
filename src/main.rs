@@ -2,7 +2,7 @@
 extern crate strum_macros;
 extern crate strum;
 
-use std::{thread, time::Duration, io::stdout};
+use std::{thread, time::Duration, io::{stdout, Write}};
 
 use clap::{Parser, Subcommand};
 use colored::*;
@@ -127,4 +127,14 @@ pub fn display_logo(word: &str, animate: bool) {
             thread::sleep(Duration::from_millis(100));
         }
     }
+}
+
+pub fn print_separator(length: u8, animate: bool) {
+    println!("");
+    for _i in 1..length {
+        print!("-");
+        std::io::stdout().flush().unwrap();
+        if animate { thread::sleep(Duration::from_millis(10)) }
+    }
+    println!("");
 }
