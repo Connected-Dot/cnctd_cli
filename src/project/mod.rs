@@ -6,7 +6,7 @@ extern crate regex;
 use walkdir::{WalkDir, DirEntry};
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::{Read, Write};
+use std::io::{Read, Write, BufReader, BufRead};
 use toml::Value as TomlValue;
 use serde_json::Value as JsonValue;
 use regex::Regex;
@@ -88,9 +88,8 @@ pub fn update_rust_project_versions(root_path: &str) -> std::io::Result<()> {
     
     for entry in WalkDir::new(root_path)
         .into_iter()
-        .filter_entry(|e| !is_ignored(e))
+        .filter_map(|e| e.ok())
     {
-        let entry = entry?;
         let path = entry.path();
         let file_name = path.file_name().unwrap_or_default();
 
@@ -113,35 +112,43 @@ pub fn update_rust_project_versions(root_path: &str) -> std::io::Result<()> {
     // Step 2: Update dependencies in each Rust project
     for entry in WalkDir::new(root_path)
         .into_iter()
-        .filter_entry(|e| !is_ignored(e))
+        .filter_map(|e| e.ok())
     {
-        let entry = entry?;
         let path = entry.path();
         let file_name = path.file_name().unwrap_or_default();
 
         if path.is_file() && file_name.to_str().unwrap() == "Cargo.toml" {
-            let mut file = File::open(path)?;
-            let mut contents = String::new();
-            file.read_to_string(&mut contents)?;
-            let mut toml: TomlValue = contents.parse().unwrap();
+            let temp_file_path = format!("{}.tmp", path.to_string_lossy());
+            let mut temp_file = File::create(&temp_file_path)?;
+            let file = File::open(&path)?;
+            let reader = BufReader::new(file);
 
-            if let Some(dependencies) = toml.get_mut("dependencies") {
-                for (name, version) in project_versions.iter() {
-                    if let Some(dep) = dependencies.get_mut(name) {
-                        if let Some(dep_table) = dep.as_table_mut() {
-                            // Check if both 'version' and 'path' keys are present
-                            if dep_table.contains_key("version") && dep_table.contains_key("path") {
-                                dep_table.insert("version".to_string(), TomlValue::String(version.clone()));
-                            }
+            let mut in_dependencies_section = false;
+
+            for line in reader.lines() {
+                let line = line?;
+                if line.trim() == "[dependencies]" {
+                    in_dependencies_section = true;
+                } else if line.trim().starts_with('[') {
+                    in_dependencies_section = false;
+                }
+
+                if in_dependencies_section {
+                    let mut new_line = line.clone();
+                    for (name, version) in &project_versions {
+                        if line.contains(name) && line.contains("path") {
+                            let version_line = format!("version = \"{}\"", version);
+                            new_line = line.replacen("version = \"[^\"]+\"", &version_line, 1);
                         }
                     }
+                    writeln!(temp_file, "{}", new_line)?;
+                } else {
+                    writeln!(temp_file, "{}", line)?;
                 }
             }
 
-            // Write the updated TOML back to the file
-            let updated_contents = toml.to_string();
-            let mut file = File::create(path)?;
-            file.write_all(updated_contents.as_bytes())?;
+            // Replace the original file with the temp file
+            std::fs::rename(temp_file_path, &path)?;
         }
     }
 
