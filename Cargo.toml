@@ -1,6 +1,6 @@
 [package]
 name = "cnctd_cli"
-version = "0.1.8"
+version = "0.1.9"
 edition = "2021"
 authors = ["Connected Dot Inc.", "Kyle Ebner <kyle@cnctd.world>"]
 description = "CLI for scaffolding and managing projects"
@@ -30,4 +30,5 @@ strum = "0.25.0"
 strum_macros = "0.25.2"
 tokio = { version = "1.32.0", features = ["full"] }
 toml = "0.8.0"
+toml_edit = "0.20.0"
 walkdir = "2.4.0"

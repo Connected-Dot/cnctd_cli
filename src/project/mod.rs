@@ -3,6 +3,7 @@ extern crate toml;
 extern crate serde_json;
 extern crate regex;
 
+use toml_edit::{Document, Item};
 use walkdir::{WalkDir, DirEntry};
 use std::collections::HashMap;
 use std::fs::File;
@@ -83,74 +84,57 @@ pub fn print_project_versions(root_path: &str) -> std::io::Result<()> {
 }
 
 pub fn update_rust_project_versions(root_path: &str) -> std::io::Result<()> {
-    // Step 1: Collect all Rust project names and versions
-    let mut project_versions: HashMap<String, String> = HashMap::new();
+    // let mut project_versions: HashMap<String, String> = HashMap::new();
     
-    for entry in WalkDir::new(root_path)
-        .into_iter()
-        .filter_map(|e| e.ok())
-    {
-        let path = entry.path();
-        let file_name = path.file_name().unwrap_or_default();
+    // for entry in WalkDir::new(root_path)
+    //     .into_iter()
+    //     .filter_entry(|e| !is_ignored(e))
+    // {
+    //     let entry = entry?;
+    //     let path = entry.path();
+    //     let file_name = path.file_name().unwrap_or_default();
 
-        if path.is_file() && file_name.to_str().unwrap() == "Cargo.toml" {
-            let mut file = File::open(path)?;
-            let mut contents = String::new();
-            file.read_to_string(&mut contents)?;
-            let toml: TomlValue = contents.parse().unwrap();
+    //     if path.is_file() && file_name.to_str().unwrap() == "Cargo.toml" {
+    //         let contents = std::fs::read_to_string(path)?;
+    //         let toml: TomlValue = contents.parse().unwrap();
             
-            if let Some(package) = toml.get("package") {
-                if let Some(name) = package.get("name").and_then(TomlValue::as_str) {
-                    if let Some(version) = package.get("version").and_then(TomlValue::as_str) {
-                        project_versions.insert(name.to_string(), version.to_string());
-                    }
-                }
-            }
-        }
-    }
+    //         if let Some(package) = toml.get("package") {
+    //             if let Some(name) = package.get("name").and_then(TomlValue::as_str) {
+    //                 if let Some(version) = package.get("version").and_then(TomlValue::as_str) {
+    //                     project_versions.insert(name.to_string(), version.to_string());
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
-    // Step 2: Update dependencies in each Rust project
-    for entry in WalkDir::new(root_path)
-        .into_iter()
-        .filter_map(|e| e.ok())
-    {
-        let path = entry.path();
-        let file_name = path.file_name().unwrap_or_default();
+    // for entry in WalkDir::new(root_path)
+    //     .into_iter()
+    //     .filter_entry(|e| !is_ignored(e))
+    // {
+    //     let entry = entry?;
+    //     let path = entry.path();
+    //     let file_name = path.file_name().unwrap_or_default();
 
-        if path.is_file() && file_name.to_str().unwrap() == "Cargo.toml" {
-            let temp_file_path = format!("{}.tmp", path.to_string_lossy());
-            let mut temp_file = File::create(&temp_file_path)?;
-            let file = File::open(&path)?;
-            let reader = BufReader::new(file);
+    //     if path.is_file() && file_name.to_str().unwrap() == "Cargo.toml" {
+    //         let mut contents = std::fs::read_to_string(path)?;
+    //         let mut doc = contents.parse::<Document>().unwrap();
 
-            let mut in_dependencies_section = false;
+    //         if let Some(table) = doc.as_table_mut().entry("dependencies").as_table_mut() {
+    //             for (name, version) in project_versions.iter() {
+    //                 if let Some(dep) = table.get(name) {
+    //                     if let Item::Table(dep_table) = dep {
+    //                         if dep_table.contains_key("version") && dep_table.contains_key("path") {
+    //                             dep_table.get_mut("version").unwrap().as_value_mut().unwrap().as_str_mut().unwrap().replace_range(.., version);
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
 
-            for line in reader.lines() {
-                let line = line?;
-                if line.trim() == "[dependencies]" {
-                    in_dependencies_section = true;
-                } else if line.trim().starts_with('[') {
-                    in_dependencies_section = false;
-                }
-
-                if in_dependencies_section {
-                    let mut new_line = line.clone();
-                    for (name, version) in &project_versions {
-                        if line.contains(name) && line.contains("path") {
-                            let version_line = format!("version = \"{}\"", version);
-                            new_line = line.replacen("version = \"[^\"]+\"", &version_line, 1);
-                        }
-                    }
-                    writeln!(temp_file, "{}", new_line)?;
-                } else {
-                    writeln!(temp_file, "{}", line)?;
-                }
-            }
-
-            // Replace the original file with the temp file
-            std::fs::rename(temp_file_path, &path)?;
-        }
-    }
+    //         std::fs::write(path, doc.to_string_in_original_order())?;
+    //     }
+    // }
 
     Ok(())
 }
