@@ -19,7 +19,7 @@ pub mod scaffold;
 pub mod config;
 
 #[derive(Parser)]
-#[command(author, version, about = get_about(), long_about = None, arg_required_else_help = true)]
+#[command(author, version, about = None, long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
@@ -52,17 +52,10 @@ pub enum Commands {
         d: Option<String>,
     },
 
-    #[command(about = get_shortcut_about(1))]
-    S1 {
-
-    },
-    #[command(about = get_shortcut_about(2))]
-    S2 {
-
-    },
-    #[command(about = get_shortcut_about(3))]
-    S3 {
-
+    /// Execute named shortcut
+    S {
+        #[command()]
+        name: String,
     },
 
     /// Bump Project
@@ -79,27 +72,6 @@ async fn main() {
     match route_command(cli.command).await {
         Ok(()) => {}
         Err(e) => println!("Error: {}", e)
-    }
-}
-
-fn get_about() -> String {
-
-    match Config::get() {
-        Some(conf) => {
-            let iphone = match conf.iphone {
-                Some(id) => id.green(),
-                None => "Not set. Run cnctd config -i <DEVICE_ID> to set".yellow()
-            };
-            format!("iPhone: {} Run cnctd config -i <DEVICE_ID> to change", iphone)
-        }
-        None => format!("{}", "GitHub Token not set. Run cnctd config -g <TOKEN>".yellow()).into()
-    }
-}
-
-fn get_shortcut_about(id: u8) -> String {
-    match Config::get_shortcut(id) {
-        Some(shortcut) => format!("Shortcut {} set: {} | Run cnctd config --s{} <SHELL_COMMAND> to change",id, shortcut.green(), id),
-        None => format!("Shortcut {} not set. Run cnctd config --s{} <SHELL_COMMAND> to set", id, id)
     }
 }
 

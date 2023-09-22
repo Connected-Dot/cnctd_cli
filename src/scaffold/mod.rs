@@ -3,7 +3,7 @@ use cnctd::cnctd_dialogue::Dialog;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 
-use crate::scaffold::module::ModuleScaffold;
+use crate::{scaffold::module::ModuleScaffold, config::Config, display_logo};
 
 use self::project::ProjectScaffold;
 
@@ -16,7 +16,7 @@ pub enum MainOptions {
     #[default]
     LaunchNewProject,
     CreateModule,
-    GetConfig,
+    Config,
     Exit,
 }
 
@@ -25,7 +25,7 @@ impl fmt::Display for MainOptions {
         let display_str = match self {
             Self::LaunchNewProject => "Launch new project",
             Self::CreateModule => "Create module",
-            Self::GetConfig => "Get config",
+            Self::Config => "Config",
             Self::Exit => "Exit",
         };
         write!(f, "{}", display_str)
@@ -36,9 +36,8 @@ pub struct Scaffold {}
 
 impl Scaffold {
     pub async fn run() -> anyhow::Result<()> {
-
+        display_logo("cnctd", true);
         loop {
-            println!("\n{}\n","Welcome to cnctd Scaffold!".cyan().bold());
 
             let main_selection = Dialog::select::<MainOptions>("What would you like to do?", None, None, None);
 
@@ -70,8 +69,8 @@ impl Scaffold {
                         break;
                     }
                 }
-                MainOptions::GetConfig => {
-                    // Your logic for getting the config
+                MainOptions::Config => {
+                    Config::launch_config_setup().await?;
                 },
                 MainOptions::Exit => {
                     break;

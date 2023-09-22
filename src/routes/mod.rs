@@ -1,9 +1,10 @@
 use std::env::current_dir;
 
 use cnctd::cnctd_bump::bump_project;
+use colored::Colorize;
 // use cnctd_git::Git;
 
-use crate::{Commands, scaffold::Scaffold, display_logo, project::print_project_versions, config::Config};
+use crate::{Commands, scaffold::Scaffold, display_logo, project::print_project_versions, config::{Config, shortcut::Shortcut}};
 
 
 // use self::commands::config::{route_config_command, ConfigOptions};
@@ -13,11 +14,9 @@ use crate::{Commands, scaffold::Scaffold, display_logo, project::print_project_v
 pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
     match command {
         Some(Commands::Config {} ) => {
-            display_logo("config", false);
             Config::launch_config_setup().await?;
         }
         Some(Commands::New {  }) => {
-            display_logo("cnctd.", true);
             Scaffold::run().await?;
         }
         Some(Commands::Update {  }) => {
@@ -26,9 +25,9 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
             // git.list_all_repos().await.unwrap();
             // git.test_git2_auth("https://github.com/Connected-Dot/cnctd_git").unwrap();
         }
-        Some(Commands::S1 {  }) => {}
-        Some(Commands::S2 {  }) => {}
-        Some(Commands::S3 {  }) => {}
+        Some(Commands::S { name }) => {
+            Shortcut::execute(&name).await?;
+        }
         Some(Commands::Bump { version_part }) => {
             match version_part {
                 Some(version_part) => bump_project(&version_part).await?,
@@ -50,7 +49,7 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
             }
         }
         None => {
-
+            Scaffold::run().await?;
         }
     }
     Ok(())
