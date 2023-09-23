@@ -1,4 +1,4 @@
-use std::{env::{current_dir, set_current_dir}, fmt};
+use std::{env::{current_dir, set_current_dir}, fmt, fs::create_dir_all};
 
 use cnctd::{cnctd_dialogue::Dialog, cnctd_cargo::{Cargo, CrateType}};
 use serde::{Deserialize, Serialize};
@@ -74,7 +74,7 @@ impl ModuleScaffold {
     pub async fn build(&mut self) -> anyhow::Result<()> {
         println!("module: {:?}", self);
         let project_dir = format!("{}/{}", self.directory, self.name);
-
+        create_dir_all(&project_dir)?;
         Cargo::init(&project_dir, CrateType::Module).await?;
 
         Ok(())
