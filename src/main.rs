@@ -7,7 +7,7 @@ use std::{thread, time::Duration, io::{stdout, Write}};
 use clap::{Parser, Subcommand};
 use colored::*;
 use config::Config;
-use crossterm::{execute, terminal::{Clear, ClearType}};
+use crossterm::{execute, terminal::{Clear, ClearType}, style::Stylize};
 use routes::route_command;
 use tokio;
 use dotenv::dotenv;
@@ -19,7 +19,7 @@ pub mod scaffold;
 pub mod config;
 
 #[derive(Parser)]
-#[command(author, version, about = None, long_about = None)]
+#[command(author, version, about = get_logo("cnctd"), long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
@@ -99,6 +99,11 @@ pub fn display_logo(word: &str, animate: bool) {
             thread::sleep(Duration::from_millis(100));
         }
     }
+}
+
+pub fn get_logo(word: &str) -> String {
+    let standard_font = FIGfont::standard().unwrap();
+    standard_font.convert(word).unwrap().to_string().cyan().to_string()
 }
 
 pub fn print_separator(length: u8, animate: bool) {

@@ -1,15 +1,8 @@
 use std::env::current_dir;
 
 use cnctd::cnctd_bump::bump_project;
-use colored::Colorize;
-// use cnctd_git::Git;
 
-use crate::{Commands, scaffold::Scaffold, display_logo, project::print_project_versions, config::{Config, shortcut::Shortcut}};
-
-
-// use self::commands::config::{route_config_command, ConfigOptions};
-
-// pub mod commands;
+use crate::{Commands, scaffold::Scaffold, project::print_project_versions, config::{Config, shortcut::Shortcut}};
 
 pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
     match command {
@@ -20,10 +13,7 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
             Scaffold::run().await?;
         }
         Some(Commands::Update {  }) => {
-            // let git_token = Config::get_git_token().unwrap();
-            // let git = Git::new(git_token);
-            // git.list_all_repos().await.unwrap();
-            // git.test_git2_auth("https://github.com/Connected-Dot/cnctd_git").unwrap();
+    
         }
         Some(Commands::S { name }) => {
             Shortcut::execute(&name).await?;
