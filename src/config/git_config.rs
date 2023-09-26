@@ -3,6 +3,7 @@ use cnctd::{cnctd_git::{account::GitAccount, GitProvider}, cnctd_dialogue::Dialo
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct GitConfig {
     pub git_accounts: Option<Vec<GitAccount>>,
@@ -11,30 +12,30 @@ pub struct GitConfig {
 
 impl GitConfig {
     // #[async_recursion]
-    pub async fn add_account(&mut self) -> anyhow::Result<()> {
+    pub async fn add_account(&mut self) -> anyhow::Result<GitAccount> {
         let prompt = "Enter your GitHub token\n";
         let token: String = Dialog::input(prompt, None, None, None);
         let git_account = GitAccount::new(GitProvider::GitHub, &token).await?;
-        let login = git_account.login.clone();
+        let login = &git_account.login.clone();
     
         match &mut self.git_accounts {
             Some(accounts) => {
-                if accounts.iter().any(|account| account.login == login) {
+                if accounts.iter().any(|account| &account.login == login) {
                     println!("{}", "This account already exists.".yellow());
                     thread::sleep(Duration::from_secs(2));
                 } else {
                     accounts.push(git_account.clone());
                     if accounts.len() == 1 {
-                        self.default_account = Some(login);
+                        self.default_account = Some(login.clone());
                     }
                 }
             },
             None => {
-                self.git_accounts = Some(vec![git_account]);
-                self.default_account = Some(login);
+                self.git_accounts = Some(vec![git_account.clone()]);
+                self.default_account = Some(login.clone());
             }
         }
-        Ok(())
+        Ok(git_account)
     }
 
     pub fn remove_account(&mut self) -> anyhow::Result<()> {
@@ -129,7 +130,11 @@ impl GitConfig {
     pub fn display_accounts(&self) {
         match &self.git_accounts {
             Some(accounts) => {
-                println!("\nCurrent accounts:");
+                if accounts.len() > 0 { 
+                    println!("\nCurrent accounts:");
+                } else {
+                    println!("{}", "No Git accounts configured".yellow())
+                }
                 for (i, account) in accounts.iter().enumerate() {
                     let default_account = match self.default_account.clone() {
                         Some(login) => login,
@@ -157,7 +162,41 @@ impl GitConfig {
             }
             None => println!("{}", "No Git accounts configured".yellow())
         }
-        
         println!("\n");
     }
+
+    pub fn get_accounts(&self) -> Vec<GitAccount> {
+        match &self.git_accounts {
+            Some(accounts) => {
+                accounts.clone()
+            }
+            None => vec![]
+        }
+    }
+
+    pub fn get_default_account_and_url(&self) -> Option<(String, String, bool)> {
+        if let Some(default_account_login) = &self.default_account {
+            if let Some(accounts) = &self.git_accounts {
+                if let Some(default_account) = accounts.iter().find(|acc| &acc.login == default_account_login) {
+                    let default_url = &default_account.default_url;
+                    let is_org = default_account.org_urls.contains(default_url);
+                    Some((default_account.login.clone(), default_url.clone(), is_org));
+                }
+            }
+        }
+        None
+    }
+
+    pub fn get_default_account(&self) -> Option<GitAccount> {
+        if let Some(default_account_login) = &self.default_account {
+            if let Some(accounts) = &self.git_accounts {
+                if let Some(default_account) = accounts.iter().find(|acc| &acc.login == default_account_login) {
+                    return Some(default_account.clone());
+                }
+            }
+        }
+        None
+    }
+    
+
 }

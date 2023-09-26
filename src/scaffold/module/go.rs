@@ -4,7 +4,7 @@ use cnctd::cnctd_dialogue::Dialog;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default, PartialEq)]
-pub struct GoModule {
+pub struct GoModuleScaffold {
     features: Vec<GoModFeature>,
 }
 
@@ -24,7 +24,7 @@ impl fmt::Display for GoModFeature {
     }
 }
 
-impl GoModule {
+impl GoModuleScaffold {
     pub fn new() -> Self {
         Self {
             features: vec![]

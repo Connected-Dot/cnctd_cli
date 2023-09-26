@@ -4,8 +4,9 @@ use cnctd::cnctd_dialogue::Dialog;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use serde_json;
+use anyhow::anyhow;
 
-use crate::{get_exe_dir, print_separator, display_logo};
+use crate::{get_exe_dir, display_logo};
 
 use self::{git_config::GitConfig, cargo_toml_config::CargoTomlConfig, shortcut::Shortcut, device_config::{DeviceType, DeviceConfig}};
 
@@ -67,26 +68,26 @@ impl Config {
         format!("{}/cnctd_config.json", exe_dir).replace("/cnctd/", "/")
     }
 
-    pub fn get() ->  Option<Self> {
+    pub fn get() ->  anyhow::Result<Self> {
         let config_path = Self::get_file_path();
         let path = Path::new(&config_path);
-        let mut config_file = match File::open(path) {
-            Ok(file) => file,
-            Err(_) => return None,
-        };
+        let mut config_file = File::open(path)?;
         let mut contents = String::new();
 
-        config_file.read_to_string(&mut contents).unwrap();
-        match serde_json::from_str(&contents) {
-            Ok(config) => Some(config),
+        config_file.read_to_string(&mut contents)?;
+
+        match serde_json::from_str(&contents.as_str()) {
+            Ok(config) => Ok(config),
             Err(e) => {
                 println!("error: {}", e.to_string().red());
-                None
+                let config = Self::new();
+                config.write()?;
+                Ok(config)
             }
         }
     }
 
-    pub fn write(&self) {
+    pub fn write(&self) -> anyhow::Result<File> {
         let config_string = serde_json::to_string(&self).unwrap();
         let path_str = Self::get_file_path();
         let path = Path::new(&path_str);
@@ -102,13 +103,14 @@ impl Config {
             Ok(mut file) => {
                 let buf = config_string.as_bytes();
                 file.write(buf).unwrap();
+                Ok(file)
             }
             Err(e) => {
                 let error = format!("error: {}", e);
                 println!("{}", error.red());
+                Err(anyhow!(error))
             }
         }
-        print_separator(50, false);
     }
 
     pub fn clear(&self) {
@@ -133,10 +135,7 @@ impl Config {
     #[async_recursion]
     pub async fn launch_config_setup() -> anyhow::Result<()> {
         display_logo("config", false);
-        let mut config = match Self::get() {
-            Some(config) => config,
-            None => Self::new()
-        };
+        let mut config = Self::get()?;
         let prompt = "Which settings would you like to update?";
         let selected_option = Dialog::select::<MainOptions>(prompt, None, None, None);
     
@@ -164,22 +163,22 @@ impl Config {
         match &*selection {
             "Add" => {
                 self.git.add_account().await?;
-                self.write();
+                self.write()?;
                 self.manage_git_accounts().await?;
             },
             "Remove" => {
                 self.git.remove_account()?;
-                self.write();
+                self.write()?;
                 self.manage_git_accounts().await?;
             }
             "Set default account" => {
                 self.git.set_default_account()?;
-                self.write();
+                self.write()?;
                 self.manage_git_accounts().await?;
             }
             "Set default URL" => {
                 self.git.set_default_url()?;
-                self.write();
+                self.write()?;
                 self.manage_git_accounts().await?;
             },
             "Back" => Self::launch_config_setup().await?,
@@ -199,23 +198,23 @@ impl Config {
         let selection = Dialog::select_str(prompt, &options, None, None, None);
         match &*selection {
             "Add author" => {
-                self.cargo_toml.add_author();
-                self.write();
+                self.cargo_toml.add_author()?;
+                self.write()?;
                 self.manage_cargo_toml().await?;
             },
             "Remove author" => {
                 self.cargo_toml.remove_author();
-                self.write();
+                self.write()?;
                 self.manage_cargo_toml().await?;
             }
             "Set Default Author" => {
                 self.cargo_toml.set_default_author();
-                self.write();
+                self.write()?;
                 self.manage_cargo_toml().await?;
             }
             "Set Default License" => {
-                self.cargo_toml.set_default_license();
-                self.write();
+                self.cargo_toml.set_default_license()?;
+                self.write()?;
                 self.manage_cargo_toml().await?;
             },
             "Back" => Self::launch_config_setup().await?,
@@ -236,22 +235,22 @@ impl Config {
         match &*selection {
             "Add device" => {
                 self.devices.add_device();
-                self.write();
+                self.write()?;
                 self.manage_devices().await?;
             },
             "Remove device" => {
                 self.devices.remove_device();
-                self.write();
+                self.write()?;
                 self.manage_devices().await?;
             }
             "Set default iOS device" => {
                 self.devices.set_default_device(DeviceType::Ios);
-                self.write();
+                self.write()?;
                 self.manage_devices().await?;
             }
             "Set default Android Device" => {
                 self.devices.set_default_device(DeviceType::Android);
-                self.write();
+                self.write()?;
                 self.manage_devices().await?;
             },
             "Back" => Self::launch_config_setup().await?,
@@ -273,12 +272,12 @@ impl Config {
         match &*selection {
             "Add shortcut" => {
                 Shortcut::add(&mut self.shortcuts);
-                self.write();
+                self.write()?;
                 self.manage_shortcuts().await?;
             },
             "Remove shortcut" => {
                 Shortcut::remove(&mut self.shortcuts);
-                self.write();
+                self.write()?;
                 self.manage_shortcuts().await?;
             }
             "Execute shortcut" => {

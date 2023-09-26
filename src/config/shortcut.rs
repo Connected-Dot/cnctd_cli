@@ -55,18 +55,14 @@ impl Shortcut {
     }
 
     pub async fn execute(name: &str) -> anyhow::Result<()> {
-        match Config::get() {
-            Some(config) => {
-                if let Some(index) = config.shortcuts.iter().position(|shortcut| shortcut.name == name) {
-                    let command = &config.shortcuts[index].command;
-                    Shell::run(&command, true).await?;
-                } else {
-                    println!("{}", format!("No shortcut with name: {}", name.italic()).yellow())
-                }
-            }
-            None => println!("{}", "No shortcuts configured".yellow())
+        let config = Config::get()?;
+
+        if let Some(index) = config.shortcuts.iter().position(|shortcut| shortcut.name == name) {
+            let command = &config.shortcuts[index].command;
+            Shell::run(&command, true).await?;
+        } else {
+            println!("{}", format!("No shortcut with name: {}", name.italic()).yellow())
         }
-        
 
         Ok(())
     }

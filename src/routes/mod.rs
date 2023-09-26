@@ -1,8 +1,9 @@
 use std::env::current_dir;
+use cnctd::{cnctd_bump::bump_project, cnctd_git::{repo::GitRepo, account::GitAccount, GitProvider}, cnctd_dialogue::Dialog};
 
-use cnctd::cnctd_bump::bump_project;
+use crate::{Commands, scaffold::Scaffold, project::print_project_versions, config::{Config, shortcut::Shortcut}, manager::Manager};
 
-use crate::{Commands, scaffold::Scaffold, project::print_project_versions, config::{Config, shortcut::Shortcut}};
+// pub mod commands;
 
 pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
     match command {
@@ -12,8 +13,8 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
         Some(Commands::New {  }) => {
             Scaffold::run().await?;
         }
-        Some(Commands::Update {  }) => {
-    
+        Some(Commands::Update { m }) => {
+            Manager::update(m).await?;
         }
         Some(Commands::S { name }) => {
             Shortcut::execute(&name).await?;
@@ -37,6 +38,24 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
                     print_project_versions(dir)?;
                 }
             }
+        }
+        Some(Commands::Repo {  }) => {
+            let config = Config::get()?;
+            let git_account = match config.git.get_default_account() {
+                Some(default_account) => {
+                    println!("git account: {:?}", default_account);
+                    default_account
+                    
+                },
+                None => {
+                    println!("No default git account");
+                    let token: String = Dialog::input("Enter token", None, None, None);
+                    GitAccount::new(GitProvider::GitHub, &token).await?
+                }
+            };
+            let repo = GitRepo::get(&git_account, "cnctd").await?;
+            println!("Repo: {:?}", repo);
+            
         }
         None => {
             Scaffold::run().await?;

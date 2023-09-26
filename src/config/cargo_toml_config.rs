@@ -1,16 +1,8 @@
 use std::{thread, time::Duration};
 
-use cnctd::cnctd_dialogue::Dialog;
+use cnctd::{cnctd_dialogue::Dialog, cnctd_cargo::cargo_toml::Author};
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct  Author {
-    pub name: String,
-    pub organization: String,
-    pub email: String,
-}
-
 
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -22,12 +14,14 @@ pub struct CargoTomlConfig {
 
 
 impl CargoTomlConfig {
-    pub fn add_author(&mut self) {
+    pub fn add_author(&mut self) -> anyhow::Result<Author> {
         let name = Dialog::input("Enter name", None, None, None);
         let email: String = Dialog::input("Enter email", None, None, None);
         let organization = Dialog::input("Enter organization", None, None, None);
         let author = Author { name, organization, email: email.clone() };
         
+        let email_clone = email.clone();
+    
         match &mut self.authors {
             Some(authors) => {
                 if authors.iter().any(|auth| auth.email == email) {
@@ -35,18 +29,20 @@ impl CargoTomlConfig {
                     thread::sleep(Duration::from_secs(2));
                 } else {
                     authors.push(author.clone());
-                    if authors.len() == 1 { self.default_author = Some(author.email) }
+                    if authors.len() == 1 { self.default_author = Some(email_clone) }
                 }
                 
             }
             None => {
                 let authors = Some(vec![author.clone()]);
                 self.authors = authors;
-                self.default_author = Some(author.email)
+                self.default_author = Some(email_clone)
             }
         }
-
+    
+        Ok(author)
     }
+    
 
     pub fn remove_author(&mut self) {
         match &mut self.authors {
@@ -100,9 +96,10 @@ impl CargoTomlConfig {
         }
     }
 
-    pub fn set_default_license(&mut self) {
-        let license = Dialog::input("Set default license", None, None, None);
-        self.default_license = Some(license);
+    pub fn set_default_license(&mut self) -> anyhow::Result<String> {
+        let license: String = Dialog::input("Set default license", None, None, None);
+        self.default_license = Some(license.clone());
+        Ok(license)
     }
 
     pub fn display(&self) {

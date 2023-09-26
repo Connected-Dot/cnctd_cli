@@ -4,7 +4,7 @@ use cnctd::cnctd_dialogue::Dialog;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default, PartialEq)]
-pub struct RustModule {
+pub struct RustModuleScaffold {
     features: Vec<RustModFeature>,
 }
 
@@ -24,7 +24,7 @@ impl fmt::Display for RustModFeature {
     }
 }
 
-impl RustModule {
+impl RustModuleScaffold {
     pub fn new() -> Self {
         Self {
             features: vec![]
@@ -47,5 +47,5 @@ impl RustModule {
         rust_module
     }
 
-    
+    // pub fn build()
 }

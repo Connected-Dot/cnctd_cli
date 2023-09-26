@@ -3,11 +3,11 @@ extern crate toml;
 extern crate serde_json;
 extern crate regex;
 
-use toml_edit::{Document, Item};
+
 use walkdir::{WalkDir, DirEntry};
-use std::collections::HashMap;
+
 use std::fs::File;
-use std::io::{Read, Write, BufReader, BufRead};
+use std::io::Read;
 use toml::Value as TomlValue;
 use serde_json::Value as JsonValue;
 use regex::Regex;
@@ -83,7 +83,7 @@ pub fn print_project_versions(root_path: &str) -> std::io::Result<()> {
     Ok(())
 }
 
-pub fn update_rust_project_versions(root_path: &str) -> std::io::Result<()> {
+// pub fn update_rust_project_versions(root_path: &str) -> std::io::Result<()> {
     // let mut project_versions: HashMap<String, String> = HashMap::new();
     
     // for entry in WalkDir::new(root_path)
@@ -136,8 +136,8 @@ pub fn update_rust_project_versions(root_path: &str) -> std::io::Result<()> {
     //     }
     // }
 
-    Ok(())
-}
+    // Ok(())
+// }
 
 fn is_ignored(entry: &DirEntry) -> bool {
     entry.file_name().to_str().map(|s| s == "target" || s == "node_modules").unwrap_or(false)

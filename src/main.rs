@@ -5,8 +5,6 @@ extern crate strum;
 use std::{thread, time::Duration, io::{stdout, Write}};
 
 use clap::{Parser, Subcommand};
-use colored::*;
-use config::Config;
 use crossterm::{execute, terminal::{Clear, ClearType}, style::Stylize};
 use routes::route_command;
 use tokio;
@@ -17,6 +15,7 @@ pub mod project;
 pub mod routes;
 pub mod scaffold;
 pub mod config;
+pub mod manager;
 
 #[derive(Parser)]
 #[command(author, version, about = get_logo("cnctd"), long_about = None)]
@@ -42,7 +41,8 @@ pub enum Commands {
 
     /// Update git repo and publish module
     Update {
-
+        #[arg(short, long)]
+        m: Option<String>,
     },
 
     /// Get versions of all apps in current dir
@@ -62,6 +62,11 @@ pub enum Commands {
     Bump {
         #[command()]
         version_part: Option<String>,
+    },
+
+    /// Get Repo
+    Repo {
+        
     },
 }
 
