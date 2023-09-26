@@ -1,7 +1,6 @@
 use std::{env::current_dir, fmt, path::Path};
 
-use cnctd::{cnctd_dialogue::Dialog, cnctd_cargo::{Cargo, CrateType}, cnctd_git::repo::{GitRepo, ProjectType}};
-use cnctd_utils::get_relative_path;
+use cnctd::{cnctd_utils::get_relative_path, cnctd_dialogue::Dialog, cnctd_cargo::{Cargo, CrateType}, cnctd_git::repo::{GitRepo, ProjectType}};
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 

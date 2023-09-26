@@ -1,9 +1,9 @@
 use std::fmt;
-use cnctd::{cnctd_dialogue::Dialog, cnctd_git::account::GitAccount, cnctd_cargo::cargo_toml::Author};
+use cnctd::{cnctd_dialogue::Dialog, cnctd_git::account::GitAccount, cnctd_cargo::cargo_toml::Author, cnctd_utils::display_logo};
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 
-use crate::{scaffold::module::ModuleScaffold, config::{Config, git_config::GitConfig}, display_logo};
+use crate::{scaffold::module::ModuleScaffold, config::{Config, git_config::GitConfig}};
 
 use self::project::ProjectScaffold;
 

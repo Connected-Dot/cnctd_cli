@@ -2,14 +2,11 @@
 extern crate strum_macros;
 extern crate strum;
 
-use std::{thread, time::Duration, io::{stdout, Write}};
-
 use clap::{Parser, Subcommand};
-use crossterm::{execute, terminal::{Clear, ClearType}, style::Stylize};
+use cnctd::cnctd_utils::get_logo;
 use routes::route_command;
 use tokio;
 use dotenv::dotenv;
-use figlet_rs::FIGfont;
 
 pub mod project;
 pub mod routes;
@@ -80,43 +77,3 @@ async fn main() {
     }
 }
 
-pub fn get_exe_dir() -> String {
-    std::env::current_exe().unwrap().to_str().unwrap().to_string()
-}
-
-pub fn clear_terminal() {
-    execute!(stdout(), Clear(ClearType::All)).unwrap();
-}
-
-pub fn display_logo(word: &str, animate: bool) {
-    let standard_font = FIGfont::standard().unwrap();
-    let mut partial_word = String::new();
-
-    for ch in word.chars() {
-        partial_word.push(ch);
-        let figure = standard_font.convert(&partial_word).unwrap();
-        let logo = figure.to_string().cyan().to_string();
-
-        clear_terminal();
-        println!("{}", logo);
-
-        if animate {
-            thread::sleep(Duration::from_millis(100));
-        }
-    }
-}
-
-pub fn get_logo(word: &str) -> String {
-    let standard_font = FIGfont::standard().unwrap();
-    standard_font.convert(word).unwrap().to_string().cyan().to_string()
-}
-
-pub fn print_separator(length: u8, animate: bool) {
-    println!("");
-    for _i in 1..length {
-        print!("-");
-        std::io::stdout().flush().unwrap();
-        if animate { thread::sleep(Duration::from_millis(10)) }
-    }
-    println!("");
-}

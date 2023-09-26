@@ -1,7 +1,6 @@
 use std::{env::current_dir, path::Path};
 
-use cnctd::{cnctd_git::{repo::{GitRepo, ProjectType}, api::local::Branch}, cnctd_dialogue::Dialog, cnctd_cargo::Cargo};
-use cnctd_bump::bump_project;
+use cnctd::{cnctd_git::{repo::{GitRepo, ProjectType}, api::local::Branch}, cnctd_dialogue::Dialog, cnctd_cargo::Cargo, cnctd_bump::bump_project};
 use colored::Colorize;
 
 use crate::config::Config;
@@ -75,7 +74,7 @@ impl Manager {
         if Path::new("Cargo.toml").exists() {
             let project_dir = current_dir()?.as_path().to_str().unwrap().to_string();
             Cargo::publish_crate(&project_dir).await?;
-            println!("{}", "Crate successfully published!".green());
+            println!("{}", "Crate successfully published".green());
             
             Ok(())
         } 

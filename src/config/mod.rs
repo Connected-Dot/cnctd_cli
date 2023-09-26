@@ -1,12 +1,10 @@
 use std::{path::Path, fs::{File, remove_file}, io::Read, io::Write, fmt};
 use async_recursion::async_recursion;
-use cnctd::cnctd_dialogue::Dialog;
+use cnctd::{cnctd_dialogue::Dialog, cnctd_utils::{get_exe_dir, display_logo}};
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use anyhow::anyhow;
-
-use crate::{get_exe_dir, display_logo};
 
 use self::{git_config::GitConfig, cargo_toml_config::CargoTomlConfig, shortcut::Shortcut, device_config::{DeviceType, DeviceConfig}};
 
