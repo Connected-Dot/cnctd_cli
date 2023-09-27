@@ -1,5 +1,5 @@
-use std::env::current_dir;
-use cnctd::{cnctd_bump::bump_project, cnctd_git::{repo::GitRepo, account::GitAccount, GitProvider}, cnctd_dialogue::Dialog};
+use std::{env::current_dir, path::Path};
+use cnctd::{cnctd_bump::bump_project, cnctd_git::{repo::GitRepo, account::GitAccount, GitProvider}, cnctd_dialogue::Dialog, cnctd_cargo::Cargo};
 
 use crate::{Commands, scaffold::Scaffold, project::print_project_versions, config::{Config, shortcut::Shortcut}, manager::Manager};
 
@@ -56,6 +56,24 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
             let repo = GitRepo::get(&git_account, "cnctd").await?;
             println!("Repo: {:?}", repo);
             
+        }
+        Some(Commands::Workspace {  }) => {
+            let mut path = current_dir()?;
+            path.push("Cargo.toml");
+            let members = Cargo::get_workspace_members(&path)?;
+
+            println!("Members: {:?}", members);
+
+            if members.len() > 0 {
+                for member in members {
+                    let cargo_path = format!("{}/Cargo.toml", member);
+                    let cargo_path = Path::new(&cargo_path);
+                    let local_deps = Cargo::get_local_dependencies(cargo_path).await?;
+                    println!("local_deps: {:?}", local_deps);
+                }
+            } else {
+                Cargo::get_local_dependencies(&path).await?;
+            }
         }
         None => {
             Scaffold::run().await?;

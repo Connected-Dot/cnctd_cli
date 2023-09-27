@@ -65,6 +65,11 @@ pub enum Commands {
     Repo {
         
     },
+
+    /// Update Workspace
+    Workspace {
+
+    },
 }
 
 #[tokio::main]
