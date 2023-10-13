@@ -156,7 +156,9 @@ impl ModuleScaffold {
                             &_ => {}
                         }
                     }
-                    None => {}
+                    None => {
+                        println!("Project not inside larger project directory")
+                    }
                 }
 
             }

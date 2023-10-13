@@ -1,5 +1,6 @@
 use std::{env::current_dir, path::Path};
-use cnctd::{cnctd_bump::bump_project, cnctd_git::{repo::GitRepo, account::GitAccount, GitProvider}, cnctd_dialogue::Dialog, cnctd_cargo::Cargo};
+use cnctd::{cnctd_bump::bump_project, cnctd_git::{repo::GitRepo, account::GitAccount, GitProvider}, cnctd_dialogue::Dialog, cnctd_cargo::Cargo, cnctd_utils::get_relative_path};
+use colored::Colorize;
 
 use crate::{Commands, scaffold::Scaffold, project::print_project_versions, config::{Config, shortcut::Shortcut}, manager::Manager};
 
@@ -74,6 +75,36 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
             } else {
                 Cargo::get_local_dependencies(&path).await?;
             }
+        }
+        Some(Commands::Submodule {  }) => {
+            let mut path = current_dir()?;
+            let parent_dir;
+            let repo_url = Cargo::get_package_repo(&path)?;
+            let name = Cargo::get_package_name(&path)?;
+
+            println!("Name: {}\nRepo URL: {}", name, repo_url);
+
+            // match GitRepo::find_git_root(Path::new(&path)) {
+            //     Some(parent_path) => {
+            //         parent_dir = parent_path.into_os_string().into_string().unwrap();
+            //         let prompt = format!(
+            //             "Project is inside larger project directory: {}\nWould you like to initialize it as a submodule?", 
+            //             parent_dir
+            //         );
+            //         let decision = Dialog::select_str(&prompt, &vec!["Yes", "No"], None, None, None);
+            //         match &*decision {
+            //             "Yes" => {
+            //                 let relative_path = get_relative_path(Path::new(&parent_dir), Path::new(&project_dir)).unwrap();
+            //                 GitRepo::add_submodule(&parent_dir, &repo.html_url, &relative_path)?;
+            //                 println!("{}", "Added submodule".green());
+            //             }
+            //             &_ => {}
+            //         }
+            //     }
+            //     None => {
+            //         println!("Project not inside larger project directory")
+            //     }
+            // }
         }
         None => {
             Scaffold::run().await?;

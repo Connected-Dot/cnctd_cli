@@ -70,6 +70,11 @@ pub enum Commands {
     Workspace {
 
     },
+
+    /// Manage Submodule
+    Submodule {
+
+    },
 }
 
 #[tokio::main]
