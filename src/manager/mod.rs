@@ -36,10 +36,12 @@ impl Manager {
         
         let config = Config::get()?;
         let token = config.git.get_default_account().unwrap().token;
-        let path = current_dir()?.as_mut_os_string().to_str().unwrap().to_string();
         
+        let current_path = std::env::current_dir()?;
+        let git_path = GitRepo::find_git_root(&current_path).unwrap_or(current_dir()?).as_mut_os_string().to_str().unwrap().to_string();
+
         GitRepo::update(
-            &path, 
+            &git_path, 
             &message, 
             Branch::Main, 
             Branch::Main, 
