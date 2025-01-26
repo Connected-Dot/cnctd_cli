@@ -52,7 +52,7 @@ impl LocalDependencies {
 
 fn process_cargo_toml(
     cargo_toml_path: &Path,
-    base_dir: &Path,
+    original_base_dir: &Path,
     temp_dir: &Path,
     processed_projects: &mut HashSet<PathBuf>,
 ) -> io::Result<()> {
@@ -61,12 +61,18 @@ fn process_cargo_toml(
     let mut doc = content.parse::<DocumentMut>().expect("Failed to parse Cargo.toml");
 
     if let Some(deps) = doc.get_mut("dependencies").and_then(Item::as_table_like_mut) {
-        println!("Found dependencies in {}: {:?}", cargo_toml_path.display(), deps.iter().collect::<Vec<_>>());
+        println!(
+            "Found dependencies in {}: {:?}",
+            cargo_toml_path.display(),
+            deps.iter().collect::<Vec<_>>()
+        );
+
         for (name, item) in deps.iter_mut() {
             println!("Checking dependency: {}", name);
             if let Some(path) = get_dependency_path(item) {
-                println!("Found local dependency at path: {}", path.display());
-                let original_path = base_dir.join(&path);
+                // Resolve the path relative to the original Cargo.toml location
+                let original_path = original_base_dir.join(&path);
+                println!("Resolved original path: {}", original_path.display());
 
                 if !processed_projects.contains(&original_path) {
                     println!("Copying dependency: {}...", name);
@@ -77,21 +83,20 @@ fn process_cargo_toml(
                     fs::create_dir_all(&dest_path)?;
                     copy_dir(&original_path, &dest_path)?;
 
+                    // Process the copied Cargo.toml
                     let sub_cargo_toml = dest_path.join("Cargo.toml");
                     println!("Processing subproject Cargo.toml: {}", sub_cargo_toml.display());
                     process_cargo_toml(
                         &sub_cargo_toml,
-                        &original_path,
+                        &original_path, // Use the current dependency's original path as the base
                         temp_dir,
                         processed_projects,
                     )?;
                 }
 
+                // Update the path to be relative to the temp directory
                 let new_path = format!("../{}", name);
-                println!(
-                    "Updating dependency path for {}: {}",
-                    name, new_path
-                );
+                println!("Updating dependency path for {}: {}", name, new_path);
                 update_dependency_path(item, &new_path);
             } else {
                 println!("No local path for dependency: {}", name);
@@ -108,14 +113,22 @@ fn process_cargo_toml(
     Ok(())
 }
 
+
 fn get_dependency_path(item: &Item) -> Option<PathBuf> {
     if let Item::Table(table) = item {
         if let Some(Value::String(path)) = table.get("path").and_then(Item::as_value) {
+            println!("Path dependency (Table): {}", path.value());
+            return Some(PathBuf::from(path.value()));
+        }
+    } else if let Item::Value(Value::InlineTable(table)) = item {
+        if let Some(Value::String(path)) = table.get("path") {
+            println!("Path dependency (InlineTable): {}", path.value());
             return Some(PathBuf::from(path.value()));
         }
     }
     None
 }
+
 
 fn update_dependency_path(item: &mut Item, new_path: &str) {
     if let Item::Table(table) = item {
