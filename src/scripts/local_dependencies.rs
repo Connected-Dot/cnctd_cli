@@ -100,7 +100,13 @@ fn process_cargo_toml(
                 }
 
                 // Update the path to be relative to the temp directory
-                let new_path = format!("../{}", name);
+                let relative_path_to_temp = temp_dir
+                    .canonicalize()?
+                    .parent()
+                    .unwrap()
+                    .to_path_buf()
+                    .join(name.to_string());
+                let new_path = relative_path_to_temp.to_string_lossy().to_string();
                 println!("Updating dependency path for {}: {}", name, new_path);
                 update_dependency_path(item, &new_path);
             } else {
@@ -118,7 +124,6 @@ fn process_cargo_toml(
 
     Ok(())
 }
-
 
 
 fn get_dependency_path(item: &Item) -> Option<PathBuf> {
