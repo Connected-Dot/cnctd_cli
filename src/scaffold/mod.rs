@@ -3,6 +3,7 @@ use cnctd::{cnctd_dialogue::Dialog, cnctd_git::account::GitAccount, cnctd_cargo:
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
+use strum_macros::EnumIter;
 use crate::{config::{git_config::GitConfig, Config}, scaffold::module::ModuleScaffold, scripts::Scripts};
 
 use self::project::ProjectScaffold;

@@ -5,6 +5,7 @@ use cnctd::{cnctd_dialogue::Dialog, cnctd_utils::display_logo};
 use local_dependencies::LocalDependencies;
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
+use strum_macros::EnumIter;
 
 pub mod local_dependencies;
 
