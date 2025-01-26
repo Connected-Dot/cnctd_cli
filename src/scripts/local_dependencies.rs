@@ -16,6 +16,7 @@ impl LocalDependencies {
 
         // Change permissions to allow writing
         Shell::run("chmod -R u+w .", true).await?;
+        Shell::run("ls -ld ./temp", true).await?;
 
         let temp_dir = current_dir.join("temp");
 
