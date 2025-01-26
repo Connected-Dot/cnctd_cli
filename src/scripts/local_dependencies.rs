@@ -3,15 +3,19 @@ use std::env;
 use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
+use cnctd_shell::Shell;
 use toml_edit::{DocumentMut, Item, Value};
 
 pub struct LocalDependencies;
 
 impl LocalDependencies {
-    pub fn run() -> io::Result<()> {
+    pub async fn run() -> anyhow::Result<()> {
         // Get the current directory
         let current_dir = env::current_dir()?;
         println!("Current directory: {}", current_dir.display());
+
+        // Change permissions to allow writing
+        Shell::run("chmod -R u+w .", true).await?;
 
         let temp_dir = current_dir.join("temp");
 
@@ -109,9 +113,11 @@ fn process_cargo_toml(
     println!("Saving updated Cargo.toml: {}", cargo_toml_path.display());
     let mut file = File::create(cargo_toml_path)?;
     file.write_all(doc.to_string().as_bytes())?;
+    println!("Saved updated Cargo.toml: {}", cargo_toml_path.display());
 
     Ok(())
 }
+
 
 
 fn get_dependency_path(item: &Item) -> Option<PathBuf> {
@@ -133,8 +139,16 @@ fn get_dependency_path(item: &Item) -> Option<PathBuf> {
 fn update_dependency_path(item: &mut Item, new_path: &str) {
     if let Item::Table(table) = item {
         if let Some(path) = table.get_mut("path").and_then(Item::as_value_mut) {
+            println!("Updating Table path to: {}", new_path);
             *path = Value::from(new_path);
         }
+    } else if let Item::Value(Value::InlineTable(table)) = item {
+        if let Some(path) = table.get_mut("path") {
+            println!("Updating InlineTable path to: {}", new_path);
+            *path = Value::from(new_path);
+        }
+    } else {
+        println!("No path found to update for item.");
     }
 }
 

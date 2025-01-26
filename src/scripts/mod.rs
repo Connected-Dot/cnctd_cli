@@ -40,7 +40,7 @@ impl Scripts {
         let selected_option = Dialog::select::<MainOptions>(prompt, None, None, None);
     
         match selected_option {
-            MainOptions::LocalDependencies => Self::local_dependencies(),
+            MainOptions::LocalDependencies => Self::local_dependencies().await?,
             MainOptions::Blank => Self::launch_scripts_menu().await?,
             MainOptions::Back => {},
             MainOptions::Exit => std::process::exit(0),
@@ -49,7 +49,7 @@ impl Scripts {
         Ok(())
     }
 
-    pub fn local_dependencies() {
-        LocalDependencies::run().unwrap();
+    pub async fn local_dependencies() -> anyhow::Result<()> {
+        Ok(LocalDependencies::run().await?)
     }
 }
