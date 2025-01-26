@@ -6,7 +6,6 @@ use cnctd_git::account::GitAccount;
 use cnctd_utils::display_logo;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
-use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 use crate::{config::{git_config::GitConfig, Config}, scaffold::module::ModuleScaffold, scripts::Scripts};
 

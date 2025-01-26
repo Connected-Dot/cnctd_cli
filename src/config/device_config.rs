@@ -4,7 +4,6 @@ use cnctd_dialogue::Dialog;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
-use strum::IntoEnumIterator;
 
 #[derive(Debug, Deserialize, Serialize, Clone, EnumIter, PartialEq)]
 pub enum DeviceType {

@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 use serde_json;
 use anyhow::anyhow;
 use strum_macros::EnumIter;
-use strum::IntoEnumIterator;
 
 use self::{git_config::GitConfig, cargo_toml_config::CargoTomlConfig, shortcut::Shortcut, device_config::{DeviceType, DeviceConfig}};
 

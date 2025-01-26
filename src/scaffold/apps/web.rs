@@ -3,7 +3,6 @@ use std::fmt;
 use cnctd_dialogue::Dialog;
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
-use strum::IntoEnumIterator;
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, EnumIter)]
 pub enum WebFeature {
