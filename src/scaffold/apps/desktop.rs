@@ -2,6 +2,8 @@ use std::fmt;
 
 use cnctd_dialogue::Dialog;
 use serde::{Deserialize, Serialize};
+use strum_macros::EnumIter;
+use strum::IntoEnumIterator;
 
 #[derive(Debug, Deserialize, Serialize, Clone, EnumIter, PartialEq)]
 pub enum DesktopFeature {
