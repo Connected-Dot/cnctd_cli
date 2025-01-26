@@ -1,6 +1,8 @@
 use std::{fmt, fs::create_dir_all, path::Path, env::set_current_dir};
 
-use cnctd::{cnctd_dialogue::Dialog, cnctd_go::Go, cnctd_cargo::{Cargo, Crate}};
+use cnctd_cargo::{Cargo, Crate};
+use cnctd_dialogue::Dialog;
+use cnctd_go::Go;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 

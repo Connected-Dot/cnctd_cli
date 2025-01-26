@@ -1,5 +1,9 @@
 use std::fmt;
-use cnctd::{cnctd_dialogue::Dialog, cnctd_git::account::GitAccount, cnctd_cargo::cargo_toml::Author, cnctd_utils::display_logo};
+
+use cnctd_cargo::cargo_toml::Author;
+use cnctd_dialogue::Dialog;
+use cnctd_git::account::GitAccount;
+use cnctd_utils::display_logo;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;

@@ -1,6 +1,6 @@
 [package]
 name = "cnctd_cli"
-version = "0.2.14"
+version = "0.2.11"
 edition = "2021"
 authors = ["Connected Dot Inc.", "Kyle Ebner <kyle@cnctd.world>"]
 description = "CLI for scaffolding and managing projects"
@@ -14,11 +14,17 @@ path = "src/main.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.95"
-async-recursion = "1.1.1"
+anyhow = "1.0.82"
+async-recursion = "1.1.0"
 chrono = "0.4.37"
 clap = { version = "4.5.4", features = ["derive"] }
-cnctd = { version = "0.1.3", path = "../../../modules/rust/cnctd" }
+cnctd_bump = { version = "0.1.9", path = "../../../modules/rust/cnctd_bump" }
+cnctd_cargo = { version = "0.1.13", path = "../../../modules/rust/cnctd_cargo" }
+cnctd_dialogue = { version = "0.1.6", path = "../../../modules/rust/cnctd_dialogue" }
+cnctd_git = { version = "0.1.6", path = "../../../modules/rust/cnctd_git" }
+cnctd_go = { version = "0.1.1", path = "../../../modules/rust/cnctd_go" }
+cnctd_shell = { version = "0.1.7", path = "../../../modules/rust/cnctd_shell" }
+cnctd_utils = { version = "0.1.2", path = "../../../modules/rust/cnctd_utils" }
 colored = "2.1.0"
 crossterm = "0.28.1"
 dotenv = "0.15.0"

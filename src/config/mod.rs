@@ -1,6 +1,7 @@
 use std::{path::Path, fs::{File, remove_file}, io::Read, io::Write, fmt};
 use async_recursion::async_recursion;
-use cnctd::{cnctd_dialogue::Dialog, cnctd_utils::{get_exe_dir, display_logo}};
+use cnctd_dialogue::Dialog;
+use cnctd_utils::{display_logo, get_exe_dir};
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use serde_json;

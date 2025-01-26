@@ -1,4 +1,5 @@
-use cnctd::{cnctd_dialogue::Dialog, cnctd_shell::Shell};
+use cnctd_dialogue::Dialog;
+use cnctd_shell::Shell;
 use colored::{Colorize, Color};
 use serde::{Deserialize, Serialize};
 

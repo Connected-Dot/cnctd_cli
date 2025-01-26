@@ -1,7 +1,8 @@
 use std::fmt;
 
 use async_recursion::async_recursion;
-use cnctd::{cnctd_dialogue::Dialog, cnctd_utils::display_logo};
+use cnctd_dialogue::Dialog;
+use cnctd_utils::display_logo;
 use local_dependencies::LocalDependencies;
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;

@@ -1,5 +1,6 @@
 use std::{thread, time::Duration};
-use cnctd::{cnctd_git::{account::GitAccount, GitProvider}, cnctd_dialogue::Dialog};
+use cnctd_dialogue::Dialog;
+use cnctd_git::{account::GitAccount, GitProvider};
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 

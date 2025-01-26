@@ -1,5 +1,9 @@
 use std::{env::current_dir, path::Path};
-use cnctd::{cnctd_bump::bump_project, cnctd_git::{repo::GitRepo, account::GitAccount, GitProvider}, cnctd_dialogue::Dialog, cnctd_cargo::Cargo, cnctd_utils::get_relative_path};
+use cnctd_bump::bump_project;
+use cnctd_cargo::Cargo;
+use cnctd_dialogue::Dialog;
+use cnctd_git::{account::GitAccount, repo::GitRepo, GitProvider};
+use cnctd_utils::get_relative_path;
 use colored::Colorize;
 
 use crate::{config::{shortcut::Shortcut, Config}, manager::Manager, project::print_project_versions, scaffold::Scaffold, scripts::Scripts, Commands};

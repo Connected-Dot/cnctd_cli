@@ -3,7 +3,7 @@ extern crate strum_macros;
 extern crate strum;
 
 use clap::{Parser, Subcommand};
-use cnctd::cnctd_utils::get_logo;
+use cnctd_utils::get_logo;
 use routes::route_command;
 use tokio;
 use dotenv::dotenv;

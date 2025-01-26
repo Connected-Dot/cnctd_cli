@@ -1,6 +1,6 @@
 use std::fmt;
 
-use cnctd::cnctd_dialogue::Dialog;
+use cnctd_dialogue::Dialog;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, EnumIter)]

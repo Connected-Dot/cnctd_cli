@@ -1,6 +1,7 @@
 use std::{thread, time::Duration};
 
-use cnctd::{cnctd_dialogue::Dialog, cnctd_cargo::cargo_toml::Author};
+use cnctd_cargo::cargo_toml::Author;
+use cnctd_dialogue::Dialog;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 

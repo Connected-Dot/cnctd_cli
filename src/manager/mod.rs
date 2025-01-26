@@ -1,6 +1,9 @@
 use std::{env::current_dir, path::Path};
 
-use cnctd::{cnctd_git::{repo::{GitRepo, ProjectType}, api::local::Branch}, cnctd_dialogue::Dialog, cnctd_cargo::Cargo, cnctd_bump::bump_project};
+use cnctd_bump::bump_project;
+use cnctd_cargo::Cargo;
+use cnctd_dialogue::Dialog;
+use cnctd_git::{api::local::Branch, repo::{GitRepo, ProjectType}};
 use colored::Colorize;
 
 use crate::config::Config;

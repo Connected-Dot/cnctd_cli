@@ -1,5 +1,5 @@
 use std::{env::current_dir, path::Path, fs::create_dir_all, fmt};
-use cnctd::cnctd_dialogue::Dialog;
+use cnctd_dialogue::Dialog;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 
