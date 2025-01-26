@@ -3,36 +3,50 @@ use std::env;
 use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
-use cnctd_shell::Shell;
 use toml_edit::{DocumentMut, Item, Value};
 
 pub struct LocalDependencies;
 
 impl LocalDependencies {
     pub async fn run() -> anyhow::Result<()> {
+        // Get the current directory
         let current_dir = env::current_dir()?;
+        println!("Current directory: {}", current_dir.display());
+
         let temp_dir = current_dir.join("temp");
 
-        Shell::run("chmod -R u+w .", true).await?;
-
+        // Create the temp directory
         if temp_dir.exists() {
+            println!("Removing existing temp directory...");
             fs::remove_dir_all(&temp_dir)?;
         }
+        println!("Creating temp directory...");
         fs::create_dir(&temp_dir)?;
 
+        // Copy the main Cargo.toml to temp
         let main_cargo_path = current_dir.join("Cargo.toml");
         let temp_main_cargo_path = temp_dir.join("Cargo.toml");
+        println!(
+            "Copying main Cargo.toml from {} to {}...",
+            main_cargo_path.display(),
+            temp_main_cargo_path.display()
+        );
         fs::copy(&main_cargo_path, &temp_main_cargo_path)?;
 
+        // Track already processed dependencies to avoid duplication
         let mut processed_projects = HashSet::new();
 
+        // Process the main Cargo.toml
+        println!("Processing main Cargo.toml...");
         process_cargo_toml(
             &temp_main_cargo_path,
             &current_dir,
             &temp_dir,
             &mut processed_projects,
+            true, // Indicate this is the main Cargo.toml
         )?;
 
+        println!("All done!");
         Ok(())
     }
 }
@@ -42,7 +56,9 @@ fn process_cargo_toml(
     original_base_dir: &Path,
     temp_dir: &Path,
     processed_projects: &mut HashSet<PathBuf>,
+    is_main: bool,
 ) -> io::Result<()> {
+    println!("Reading Cargo.toml: {}", cargo_toml_path.display());
     let content = fs::read_to_string(cargo_toml_path)?;
     let mut doc = content.parse::<DocumentMut>().expect("Failed to parse Cargo.toml");
 
@@ -64,11 +80,18 @@ fn process_cargo_toml(
                         &original_path,
                         temp_dir,
                         processed_projects,
+                        false, // Submodule, not the main Cargo.toml
                     )?;
                 }
 
-                let relative_path = format!("../{}", name);
-                update_dependency_path(item, &relative_path);
+                // For the main Cargo.toml, paths must be relative to `temp/`
+                let new_path = if is_main {
+                    format!("temp/{}", name)
+                } else {
+                    format!("../{}", name)
+                };
+
+                update_dependency_path(item, &new_path);
             }
         }
     }
