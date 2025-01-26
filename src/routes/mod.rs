@@ -109,10 +109,10 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
             }
         }
         Some(Commands::Scripts {}) => {
-            println!("Scripts");
+            Scripts::launch_scripts_menu().await?;
         }
         None => {
-            Scripts
+            Scaffold::run().await?;
         }
     }
     Ok(())
