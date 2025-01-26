@@ -1,6 +1,6 @@
 [package]
 name = "cnctd_cli"
-version = "0.2.10"
+version = "0.2.11"
 edition = "2021"
 authors = ["Connected Dot Inc.", "Kyle Ebner <kyle@cnctd.world>"]
 description = "CLI for scaffolding and managing projects"
@@ -14,13 +14,13 @@ path = "src/main.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.82"
-async-recursion = "1.1.0"
+anyhow = "1.0.95"
+async-recursion = "1.1.1"
 chrono = "0.4.37"
 clap = { version = "4.5.4", features = ["derive"] }
 cnctd = { version = "0.1.3", path = "../../../modules/rust/cnctd" }
 colored = "2.1.0"
-crossterm = "0.27.0"
+crossterm = "0.28.1"
 dotenv = "0.15.0"
 figlet-rs = "0.1.5"
 regex = "1.10.4"
@@ -30,5 +30,5 @@ strum = "0.26.2"
 strum_macros = "0.26.2"
 tokio = { version = "1.37.0", features = ["full"] }
 toml = "0.8.12"
-toml_edit = "0.22.9"
+toml_edit = "0.22.22"
 walkdir = "2.5.0"

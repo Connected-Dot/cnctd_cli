@@ -2,7 +2,7 @@ use std::{env::current_dir, path::Path};
 use cnctd::{cnctd_bump::bump_project, cnctd_git::{repo::GitRepo, account::GitAccount, GitProvider}, cnctd_dialogue::Dialog, cnctd_cargo::Cargo, cnctd_utils::get_relative_path};
 use colored::Colorize;
 
-use crate::{Commands, scaffold::Scaffold, project::print_project_versions, config::{Config, shortcut::Shortcut}, manager::Manager};
+use crate::{config::{shortcut::Shortcut, Config}, manager::Manager, project::print_project_versions, scaffold::Scaffold, scripts::Scripts, Commands};
 
 // pub mod commands;
 
@@ -108,8 +108,11 @@ pub async fn route_command(command: Option<Commands>) -> anyhow::Result<()> {
                 }
             }
         }
+        Some(Commands::Scripts {}) => {
+            println!("Scripts");
+        }
         None => {
-            Scaffold::run().await?;
+            Scripts
         }
     }
     Ok(())

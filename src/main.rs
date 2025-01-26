@@ -13,6 +13,7 @@ pub mod routes;
 pub mod scaffold;
 pub mod config;
 pub mod manager;
+pub mod scripts;
 
 #[derive(Parser)]
 #[command(author, version, about = get_logo("cnctd"), long_about = None)]
@@ -73,6 +74,10 @@ pub enum Commands {
 
     /// Manage Submodule
     Submodule {
+
+    },
+
+    Scripts {
 
     },
 }

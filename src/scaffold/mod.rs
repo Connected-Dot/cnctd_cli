@@ -3,14 +3,13 @@ use cnctd::{cnctd_dialogue::Dialog, cnctd_git::account::GitAccount, cnctd_cargo:
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 
-use crate::{scaffold::module::ModuleScaffold, config::{Config, git_config::GitConfig}};
+use crate::{config::{git_config::GitConfig, Config}, scaffold::module::ModuleScaffold, scripts::Scripts};
 
 use self::project::ProjectScaffold;
 
 pub mod apps;
 pub mod project;
 pub mod module;
-pub mod scripts;
 
 #[derive(Debug, Deserialize, Serialize, Clone, EnumIter, Default, PartialEq)]
 pub enum MainOptions {
@@ -18,7 +17,7 @@ pub enum MainOptions {
     LaunchNewProject,
     CreateModule,
     Config,
-    // CreateScript,
+    RunScript,
     Exit,
 }
 
@@ -28,7 +27,7 @@ impl fmt::Display for MainOptions {
             Self::LaunchNewProject => "Launch new project",
             Self::CreateModule => "Create module",
             Self::Config => "Config",
-            // Self::CreateScript => "Create Script",
+            Self::RunScript => "Run Script",
             Self::Exit => "Exit",
         };
         write!(f, "{}", display_str)
@@ -77,9 +76,9 @@ impl Scaffold {
                 MainOptions::Config => {
                     Config::launch_config_setup().await?;
                 },
-                // MainOptions::CreateScript => {
-                //     println!("Create Docker Build Script");
-                // },
+                MainOptions::RunScript => {
+                    Scripts::launch_scripts_menu().await?;
+                },
                 MainOptions::Exit => {
                     break;
                 },
