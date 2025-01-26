@@ -1,6 +1,6 @@
 [package]
 name = "cnctd_cli"
-version = "0.2.13"
+version = "0.2.14"
 edition = "2021"
 authors = ["Connected Dot Inc.", "Kyle Ebner <kyle@cnctd.world>"]
 description = "CLI for scaffolding and managing projects"
@@ -20,7 +20,7 @@ chrono = "0.4.37"
 clap = { version = "4.5.4", features = ["derive"] }
 cnctd_bump = { version = "0.1.9", path = "../../../modules/rust/cnctd_bump" }
 cnctd_cargo = { version = "0.1.13", path = "../../../modules/rust/cnctd_cargo" }
-cnctd_dialogue = { version = "0.1.6", path = "../../../modules/rust/cnctd_dialogue" }
+cnctd_dialogue = { version = "0.1.7", path = "../../../modules/rust/cnctd_dialogue" }
 cnctd_git = { version = "0.1.6", path = "../../../modules/rust/cnctd_git" }
 cnctd_go = { version = "0.1.1", path = "../../../modules/rust/cnctd_go" }
 cnctd_shell = { version = "0.1.7", path = "../../../modules/rust/cnctd_shell" }
