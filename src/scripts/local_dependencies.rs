@@ -52,22 +52,26 @@ fn process_cargo_toml(
                 if !processed_projects.contains(&original_path) {
                     // Mark the project as processed
                     processed_projects.insert(original_path.clone());
-
-                    // Copy the project to the temp directory
-                    let dest_path = temp_dir.join(name.to_string());
+        
+                    // Convert `name` to `&str` to use it in `Path::join`
+                    let name_str = name.to_string();
+                    let dest_path = temp_dir.join(name_str);
                     fs::create_dir_all(&dest_path)?;
                     copy_dir(&original_path, &dest_path)?;
-
+        
                     // Process the copied Cargo.toml
                     let sub_cargo_toml = dest_path.join("Cargo.toml");
+                    println!("Processing: {}", sub_cargo_toml.display());
                     process_cargo_toml(&sub_cargo_toml, &original_path, temp_dir, processed_projects)?;
+                    println!("Finished processing: {}", sub_cargo_toml.display());
                 }
-
+        
                 // Update the path to be relative to the temp directory
                 let new_path = format!("../{}", name);
                 update_dependency_path(item, &new_path);
             }
         }
+        
     }
 
     // Save the updated Cargo.toml
@@ -80,6 +84,7 @@ fn process_cargo_toml(
 fn get_dependency_path(item: &Item) -> Option<PathBuf> {
     if let Item::Table(table) = item {
         if let Some(Value::String(path)) = table.get("path").and_then(Item::as_value) {
+            println!("Found path dependency: {}", path.value());
             return Some(PathBuf::from(path.value()));
         }
     }
@@ -95,6 +100,7 @@ fn update_dependency_path(item: &mut Item, new_path: &str) {
 }
 
 fn copy_dir(src: &Path, dest: &Path) -> io::Result<()> {
+    println!("Copying directory from {} to {}", src.display(), dest.display());
     for entry in fs::read_dir(src)? {
         let entry = entry?;
         let file_type = entry.file_type()?;
@@ -103,6 +109,7 @@ fn copy_dir(src: &Path, dest: &Path) -> io::Result<()> {
             fs::create_dir_all(&dest_path)?;
             copy_dir(&entry.path(), &dest_path)?;
         } else if file_type.is_file() {
+            println!("Copying file: {}", entry.path().display());
             fs::copy(entry.path(), dest_path)?;
         }
     }
