@@ -10,6 +10,7 @@ use self::project::ProjectScaffold;
 pub mod apps;
 pub mod project;
 pub mod module;
+pub mod scripts;
 
 #[derive(Debug, Deserialize, Serialize, Clone, EnumIter, Default, PartialEq)]
 pub enum MainOptions {
@@ -17,6 +18,7 @@ pub enum MainOptions {
     LaunchNewProject,
     CreateModule,
     Config,
+    // CreateScript,
     Exit,
 }
 
@@ -26,6 +28,7 @@ impl fmt::Display for MainOptions {
             Self::LaunchNewProject => "Launch new project",
             Self::CreateModule => "Create module",
             Self::Config => "Config",
+            // Self::CreateScript => "Create Script",
             Self::Exit => "Exit",
         };
         write!(f, "{}", display_str)
@@ -74,6 +77,9 @@ impl Scaffold {
                 MainOptions::Config => {
                     Config::launch_config_setup().await?;
                 },
+                // MainOptions::CreateScript => {
+                //     println!("Create Docker Build Script");
+                // },
                 MainOptions::Exit => {
                     break;
                 },
